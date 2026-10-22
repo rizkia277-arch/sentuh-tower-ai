@@ -144,7 +144,12 @@
     .panel-ai h3 { margin-top: 0; }
     .panel-ai button { background: #166a8a; }
     .panel-ai .catatan { font-size: 13px; color: #4a6372; }
-    #hasilAi { white-space: pre-wrap; line-height: 1.6; overflow-wrap: anywhere; }
+    #hasilAi { line-height: 1.55; overflow-wrap: anywhere; }
+    #hasilAi .ai-ringkasan { font-weight: 700; font-size: 18px; margin: 14px 0 6px; color: #113b51; }
+    #hasilAi .ai-label { margin: 16px 0 5px; font-weight: 700; }
+    #hasilAi .ai-isi { margin: 0; }
+    #hasilAi .ai-langkah { margin: 4px 0 0; padding-left: 22px; }
+    #hasilAi .ai-langkah li { margin: 6px 0; }
 
     @media (max-width: 600px) {
       body {
@@ -1026,6 +1031,34 @@ function perbaruiTombolAi() {
     : 'Masukkan hasil pemeriksaan Tx dan/atau Rx terlebih dahulu.';
 }
 
+function tampilkanAnalisisRapi(wadah, hasil) {
+  wadah.replaceChildren();
+  const judul = document.createElement('div');
+  judul.className = 'ai-ringkasan';
+  judul.textContent = hasil.kesimpulan;
+  wadah.appendChild(judul);
+  const label = document.createElement('div');
+  label.className = 'ai-label';
+  label.textContent = 'Hasil Analisis';
+  wadah.appendChild(label);
+  const uraian = document.createElement('p');
+  uraian.className = 'ai-isi';
+  uraian.textContent = hasil.penjelasan;
+  wadah.appendChild(uraian);
+  const labelLangkah = document.createElement('div');
+  labelLangkah.className = 'ai-label';
+  labelLangkah.textContent = 'Tindak Lanjut';
+  wadah.appendChild(labelLangkah);
+  const daftar = document.createElement('ol');
+  daftar.className = 'ai-langkah';
+  hasil.tindak_lanjut.forEach(teks => {
+    const butir = document.createElement('li');
+    butir.textContent = teks;
+    daftar.appendChild(butir);
+  });
+  wadah.appendChild(daftar);
+}
+
 async function analisisAi() {
   const kategori = kategoriPemeriksaan();
   if (!kategori) return;
@@ -1043,9 +1076,13 @@ async function analisisAi() {
     const hasil = await response.json();
     if (!response.ok) throw new Error(hasil.error || 'Layanan AI gagal diakses.');
     // Hindari menampilkan hasil dari pemeriksaan yang berubah selama permintaan.
-    keluaran.textContent = kategoriPemeriksaan() === kategori
-      ? hasil.analisis
-      : 'Input berubah selama analisis. Silakan jalankan analisis AI kembali.';
+    if (kategoriPemeriksaan() !== kategori) {
+      keluaran.textContent = 'Input berubah selama analisis. Silakan jalankan analisis AI kembali.';
+    } else if (hasil.hasil && Array.isArray(hasil.hasil.tindak_lanjut)) {
+      tampilkanAnalisisRapi(keluaran, hasil.hasil);
+    } else {
+      throw new Error('Format hasil AI belum sesuai.');
+    }
   } catch (error) {
     keluaran.textContent = 'AI belum tersedia: ' + error.message;
   } finally {
