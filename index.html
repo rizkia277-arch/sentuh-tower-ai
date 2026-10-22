@@ -193,6 +193,7 @@
     <p id="hasilLokasi" class="koordinat" role="status">
       Lokasi belum dibaca.
     </p>
+    <p id="akurasiLokasi" class="catatan" role="status"></p>
 
     <hr>
 
@@ -303,7 +304,7 @@
       <p>Setelah hasil validasi Tx/Rx muncul, klik tombol ini untuk memperoleh penjelasan dan rekomendasi pemeriksaan lanjutan dari model AI.</p>
       <button type="button" id="tombolAi" onclick="analisisAi()" disabled>Analisis AI</button>
       <p id="hasilAi" role="status" aria-live="polite">Masukkan hasil pemeriksaan Tx dan/atau Rx terlebih dahulu.</p>
-      <p class="catatan">Privasi: hanya kategori hasil validasi dikirim ke AI. Koordinat GPS, nama operator, nomor izin, database SIMS, dan frekuensi mentah tidak dikirim. AI tidak menetapkan status hukum atau menggantikan verifikasi petugas.</p>
+      <p class="catatan">Privasi: hanya kategori hasil validasi dikirim ke AI. Gunakan data simulasi untuk pengujian AI sampai ada izin penggunaan data kedinasan. Koordinat GPS, nama operator, nomor izin, database SIMS, dan frekuensi mentah tidak dikirim. AI tidak menetapkan status hukum atau menggantikan verifikasi petugas.</p>
     </section>
 </div>
   </main>
@@ -380,6 +381,7 @@
 
       // Hapus posisi lama saat meminta posisi baru.
       posisiLapangan = null;
+      document.getElementById("akurasiLokasi").textContent = "";
       bersihkanHasil("");
 
       if (!navigator.geolocation) {
@@ -395,11 +397,21 @@
         function (posisi) {
           const latitude = posisi.coords.latitude;
           const longitude = posisi.coords.longitude;
+          const akurasi = posisi.coords.accuracy;
 
           posisiLapangan = {
             latitude,
-            longitude
+            longitude,
+            akurasi,
+            mode: "gps"
           };
+          const infoAkurasi = document.getElementById("akurasiLokasi");
+          infoAkurasi.textContent = Number.isFinite(akurasi)
+            ? "Akurasi estimasi GPS: ±" + Math.round(akurasi) + " meter. " +
+              (akurasi > BATAS_JARAK
+                ? "Akurasi melebihi radius pencocokan 20 meter; pastikan tower yang tampil benar atau ulangi pembacaan di area terbuka."
+                : "Periksa kembali identitas tower sebelum menyimpulkan hasil inspeksi.")
+            : "Estimasi akurasi GPS tidak tersedia. Konfirmasi identitas tower secara manual.";
 
           hasil.textContent =
             "Latitude: " + latitude.toFixed(6) +
@@ -660,9 +672,12 @@
         document.getElementById("longitudeManual").value
       );
 
+      document.getElementById("akurasiLokasi").textContent =
+        "Mode simulasi koordinat manual: nilai akurasi GPS tidak tersedia. Hasil bukan bukti kehadiran di lokasi.";
       tampilkanHasil({
         latitude,
-        longitude
+        longitude,
+        mode: "manual"
       });
     }
 
@@ -836,6 +851,8 @@ function normalisasiFrekuensi(nilai) {
 
 function periksaFrekuensi() {
   const hasil = document.getElementById("hasilFrekuensi");
+  const keluaranAi = document.getElementById("hasilAi");
+  if (keluaranAi) keluaranAi.textContent = "Input berubah. Jalankan Analisis AI setelah validasi terbaru.";
 
   const teksTx = document.getElementById("freqTx").value.trim();
   const teksRx = document.getElementById("freqRx").value.trim();
@@ -920,7 +937,7 @@ function periksaFrekuensi() {
   if (sesuai.length > 0) {
     hasil.style.color = "#087443";
     hasil.textContent =
-      "LEGAL — FREQ Tx dan FREQ Rx sesuai SIMS.\n\n" +
+      "SESUAI SIMS — FREQ Tx dan FREQ Rx cocok dengan data SIMS.\n\n" +
       sesuai.map(rincian).join("\n\n");
     return;
   }
@@ -951,7 +968,7 @@ function periksaFrekuensi() {
 
   if (terbalik.length > 0) {
     hasil.textContent =
-      "ILEGAL — FREQ Tx dan FREQ Rx terbalik terhadap SIMS.\n\n" +
+      "INDIKASI TIDAK SESUAI — FREQ Tx dan FREQ Rx terbalik terhadap SIMS.\n\n" +
       terbalik.map(rincian).join("\n\n");
     return;
   }
@@ -966,7 +983,7 @@ function periksaFrekuensi() {
 
   if (txCocok.length > 0 && rxCocok.length > 0) {
     hasil.textContent =
-      "ILEGAL — FREQ Tx dan FREQ Rx ada pada baris SIMS " +
+      "INDIKASI TIDAK SESUAI — FREQ Tx dan FREQ Rx ada pada baris SIMS " +
       "yang berbeda, bukan satu pasangan link.\n\n" +
       "Baris dengan FREQ Tx cocok:\n" +
       txCocok.map(rincian).join("\n\n") +
@@ -974,17 +991,17 @@ function periksaFrekuensi() {
       rxCocok.map(rincian).join("\n\n");
   } else if (txCocok.length > 0) {
     hasil.textContent =
-      "ILEGAL — FREQ Tx sesuai, tetapi FREQ Rx tidak sesuai.\n\n" +
+      "INDIKASI TIDAK SESUAI — FREQ Tx sesuai, tetapi FREQ Rx tidak sesuai.\n\n" +
       "Pasangan SIMS untuk FREQ Tx tersebut:\n" +
       txCocok.map(rincian).join("\n\n");
   } else if (rxCocok.length > 0) {
     hasil.textContent =
-      "ILEGAL — FREQ Rx sesuai, tetapi FREQ Tx tidak sesuai.\n\n" +
+      "INDIKASI TIDAK SESUAI — FREQ Rx sesuai, tetapi FREQ Tx tidak sesuai.\n\n" +
       "Pasangan SIMS untuk FREQ Rx tersebut:\n" +
       rxCocok.map(rincian).join("\n\n");
   } else {
     hasil.textContent =
-      "ILEGAL — FREQ Tx dan FREQ Rx tidak ditemukan sebagai " +
+      "BELUM SESUAI SIMS — FREQ Tx dan FREQ Rx tidak ditemukan sebagai " +
       "pasangan yang sesuai pada kandidat tower ini.";
   }
 }
@@ -1009,7 +1026,7 @@ function kategoriPemeriksaan() {
   if (tx === null || rx === null) return null;
 
   // Hanya kategori, bukan data SIMS maupun angka frekuensi yang dikirim ke API.
-  if (pesan.startsWith("LEGAL —")) return "PASANGAN_SESUAI";
+  if (pesan.startsWith("SESUAI SIMS —")) return "PASANGAN_SESUAI";
   if (pesan.startsWith("BELUM DAPAT DIVERIFIKASI")) {
     return pesan.includes("Ditemukan pasangan terbalik")
       ? "DATA_TIDAK_LENGKAP_DAN_INDIKASI_TERBALIK"
