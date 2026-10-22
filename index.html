@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sentuh Tower</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef4f8;
+      color: #173b50;
+      margin: 0;
+      padding: 20px;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 28px;
+      background: white;
+      border-radius: 16px;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    p {
+      line-height: 1.6;
+    }
+
+    .info {
+      padding: 16px;
+      background: #e8f5ef;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: #173b50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    input {
+      font-size: 16px;
+      max-width: 100%;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #b8cbd5;
+      border-radius: 6px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #d7e2e8;
+      margin: 26px 0;
+    }
+
+    .koordinat {
+      overflow-wrap: anywhere;
+    }
+
+    .manual {
+      background: #f4f7fa;
+      padding: 16px;
+      border-radius: 10px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .isian {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .operator {
+      margin-top: 24px;
+    }
+
+    .kartu {
+      border: 1px solid #d7e2e8;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    dl {
+      margin: 0;
+    }
+
+    .parameter {
+      display: grid;
+      grid-template-columns: 155px 1fr;
+      gap: 12px;
+      padding: 9px 0;
+      border-bottom: 1px solid #eef2f5;
+    }
+
+    .parameter:last-child {
+      border-bottom: none;
+    }
+
+    dt {
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    dd {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    #statusDatabase,
+    #statusPencarian {
+      overflow-wrap: anywhere;
+    }
+
+
+    .panel-ai { margin-top: 20px; border: 1px solid #c5dce8; background: #f0f8fd; border-radius: 12px; padding: 18px; }
+    .panel-ai h3 { margin-top: 0; }
+    .panel-ai button { background: #166a8a; }
+    .panel-ai .catatan { font-size: 13px; color: #4a6372; }
+    #hasilAi { white-space: pre-wrap; line-height: 1.6; overflow-wrap: anywhere; }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      main {
+        padding: 20px;
+        margin: 10px auto;
+      }
+
+      .isian {
+        grid-template-columns: 1fr;
+      }
+
+      .parameter {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>Sentuh Tower</h1>
+
+    <p>
+      Pencarian data microwave link berdasarkan lokasi lapangan.
+    </p>
+
+    <div class="info">
+      Batas pencocokan koordinat:
+      <strong>maksimal 20 meter</strong>.
+    </div>
+
+    <button id="tombolLokasi" type="button" onclick="ambilLokasi()">
+      Baca lokasi saya
+    </button>
+
+    <p id="hasilLokasi" class="koordinat" role="status">
+      Lokasi belum dibaca.
+    </p>
+
+    <hr>
+
+    <h2>Database SIMS</h2>
+
+    <label for="fileSims">
+      Pilih database SIMS dalam format CSV:
+    </label>
+
+    <p>
+      <input type="file" id="fileSims" accept=".csv">
+    </p>
+
+    <p id="statusDatabase" role="status"></p>
+
+    <details class="manual">
+      <summary>Pengujian dengan koordinat manual</summary>
+
+      <div class="isian">
+        <label for="latitudeManual">
+          Latitude:
+          <input
+            id="latitudeManual"
+            type="text"
+            inputmode="decimal"
+            placeholder="3.51111111"
+          >
+        </label>
+
+        <label for="longitudeManual">
+          Longitude:
+          <input
+            id="longitudeManual"
+            type="text"
+            inputmode="decimal"
+            placeholder="117.8161"
+          >
+        </label>
+      </div>
+
+      <p>
+        <button type="button" onclick="cariManual()">
+          Cari dari koordinat manual
+        </button>
+      </p>
+    </details>
+
+    <hr>
+
+    <p id="statusPencarian" role="status">
+      Pilih database SIMS, lalu baca lokasi Anda.
+    </p>
+
+    <details class="manual">
+      <summary>Data Tower</summary>
+      <div id="hasilPencarian"></div>
+    </details>
+    <hr>
+
+<div class="manual">
+  <h2>Pemeriksaan Frekuensi</h2>
+
+  <div class="isian">
+    <label for="freqTx">
+      FREQ Tx:
+      <input
+        id="freqTx"
+        type="text"
+        inputmode="decimal"
+        placeholder="Masukkan frekuensi Tx"
+      >
+    </label>
+
+    <label for="freqRx">
+      FREQ Rx:
+      <input
+        id="freqRx"
+        type="text"
+        inputmode="decimal"
+        placeholder="Masukkan frekuensi Rx"
+      >
+    </label>
+  </div>
+
+  <p>Gunakan satuan frekuensi yang sama dengan database SIMS.</p>
+
+  <p
+    id="hasilFrekuensi"
+    role="status"
+    style="font-weight: bold; white-space: pre-line;"
+  ></p>
+
+  <button
+    type="button"
+    onclick="
+      document.getElementById('freqTx').value = '';
+      document.getElementById('freqRx').value = '';
+      document.getElementById('hasilFrekuensi').textContent = '';
+      document.getElementById('freqTx').focus();
+    "
+  >
+    Clear
+  </button>
+
+    <section class="panel-ai" aria-labelledby="judulAi">
+      <h3 id="judulAi">AI Inspection Assistant</h3>
+      <p>Setelah hasil validasi Tx/Rx muncul, klik tombol ini untuk memperoleh penjelasan dan rekomendasi pemeriksaan lanjutan dari model AI.</p>
+      <button type="button" id="tombolAi" onclick="analisisAi()" disabled>Analisis AI</button>
+      <p id="hasilAi" role="status" aria-live="polite">Masukkan data pemeriksaan Tx/Rx terlebih dahulu.</p>
+      <p class="catatan">Privasi: hanya kategori hasil validasi dikirim ke AI. Koordinat GPS, nama operator, nomor izin, database SIMS, dan frekuensi mentah tidak dikirim. AI tidak menetapkan status hukum atau menggantikan verifikasi petugas.</p>
+    </section>
+</div>
+  </main>
+
+  <script>
+    const BATAS_JARAK = 20;
+
+    let posisiLapangan = null;
+    let databaseSims = [];
+    let dataTowerTerpilih = [];
+    let sedangMemuat = false;
+    let nomorUnggahan = 0;
+
+    const kolomSims = [
+      "CLNT_ID",
+      "CLNT_NAME",
+      "FREQ",
+      "FREQ_PAIR",
+      "SID_LONG",
+      "SID_LAT",
+      "BWIDTH",
+      "STN_NAME",
+      "EQ_MFR",
+      "STASIUN_LAWAN",
+      "CURR_LIC_NUM",
+      "MASA_LAKU",
+      "STATUS_SIMF"
+    ];
+
+    const labelKolom = {
+      CLNT_ID: "CLNT ID",
+      CLNT_NAME: "CLNT NAME",
+      FREQ: "FREQ",
+      FREQ_PAIR: "FREQ PAIR",
+      SID_LONG: "SID_LONG",
+      SID_LAT: "SID_LAT",
+      BWIDTH: "BWIDTH",
+      STN_NAME: "STN_NAME",
+      EQ_MFR: "EQ_MFR",
+      STASIUN_LAWAN: "STASIUN_LAWAN",
+      CURR_LIC_NUM: "CURR_LIC_NUM",
+      MASA_LAKU: "MASA_LAKU",
+      STATUS_SIMF: "STATUS_SIMF"
+    };
+
+    function angkaKoordinat(nilai) {
+      const teks = String(nilai ?? "").trim();
+
+      if (teks === "") return NaN;
+
+      return Number(teks.replace(",", "."));
+    }
+
+    function koordinatValid(latitude, longitude) {
+      return (
+        Number.isFinite(latitude) &&
+        Number.isFinite(longitude) &&
+        Math.abs(latitude) <= 90 &&
+        Math.abs(longitude) <= 180
+      );
+    }
+
+    function bersihkanHasil(pesan) {
+      dataTowerTerpilih = [];
+      resetInputFrekuensi();
+
+      document.getElementById("hasilPencarian").replaceChildren();
+      document.getElementById("statusPencarian").textContent = pesan;
+    }
+
+    function ambilLokasi() {
+      const hasil = document.getElementById("hasilLokasi");
+      const tombol = document.getElementById("tombolLokasi");
+
+      // Hapus posisi lama saat meminta posisi baru.
+      posisiLapangan = null;
+      bersihkanHasil("");
+
+      if (!navigator.geolocation) {
+        hasil.textContent =
+          "Browser ini tidak mendukung pembacaan lokasi.";
+        return;
+      }
+
+      hasil.textContent = "Sedang membaca lokasi perangkat...";
+      tombol.disabled = true;
+
+      navigator.geolocation.getCurrentPosition(
+        function (posisi) {
+          const latitude = posisi.coords.latitude;
+          const longitude = posisi.coords.longitude;
+
+          posisiLapangan = {
+            latitude,
+            longitude
+          };
+
+          hasil.textContent =
+            "Latitude: " + latitude.toFixed(6) +
+            " , Longitude: " + longitude.toFixed(6) + " .";
+
+          tombol.disabled = false;
+
+          if (sedangMemuat) {
+            bersihkanHasil("Menunggu database selesai dibaca.");
+          } else if (databaseSims.length > 0) {
+            tampilkanHasil(posisiLapangan);
+          } else {
+            bersihkanHasil("Pilih database SIMS terlebih dahulu.");
+          }
+        },
+
+        function (error) {
+          const pesan = {
+            1: "Akses lokasi ditolak. Periksa izin lokasi browser.",
+            2: "Lokasi belum tersedia. Pastikan layanan lokasi aktif.",
+            3: "Waktu pembacaan habis. Silakan coba kembali."
+          };
+
+          hasil.textContent =
+            pesan[error.code] || "Lokasi gagal dibaca.";
+
+          tombol.disabled = false;
+        },
+
+        {
+          enableHighAccuracy: true,
+          timeout: 20000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    function bacaCSV(teks) {
+      teks = teks.replace(/^\uFEFF/, "");
+
+      const barisPertama = teks.split(/\r\n|\n|\r/)[0];
+      const pemisah = barisPertama.includes(";") ? ";" : ",";
+
+      const hasil = [];
+      let baris = [];
+      let sel = "";
+      let dalamKutip = false;
+
+      for (let i = 0; i < teks.length; i++) {
+        const karakter = teks[i];
+
+        if (karakter === '"') {
+          if (dalamKutip && teks[i + 1] === '"') {
+            sel += '"';
+            i++;
+          } else {
+            dalamKutip = !dalamKutip;
+          }
+        } else if (karakter === pemisah && !dalamKutip) {
+          baris.push(sel);
+          sel = "";
+        } else if (
+          (karakter === "\n" || karakter === "\r") &&
+          !dalamKutip
+        ) {
+          if (karakter === "\r" && teks[i + 1] === "\n") {
+            i++;
+          }
+
+          baris.push(sel);
+
+          if (baris.some(nilai => nilai.trim() !== "")) {
+            hasil.push(baris);
+          }
+
+          baris = [];
+          sel = "";
+        } else {
+          sel += karakter;
+        }
+      }
+
+      if (dalamKutip) {
+        throw new Error("Tanda kutip pada CSV tidak lengkap.");
+      }
+
+      baris.push(sel);
+
+      if (baris.some(nilai => nilai.trim() !== "")) {
+        hasil.push(baris);
+      }
+
+      return hasil;
+    }
+
+    document.getElementById("fileSims").addEventListener(
+      "change",
+      async function (event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const unggahanIni = ++nomorUnggahan;
+        const status = document.getElementById("statusDatabase");
+
+        sedangMemuat = true;
+        databaseSims = [];
+        status.textContent = "Sedang membaca database...";
+        bersihkanHasil("");
+
+        try {
+          const teks = await file.text();
+
+          // Abaikan hasil jika pengguna sudah memilih file lain.
+          if (unggahanIni !== nomorUnggahan) return;
+
+          const baris = bacaCSV(teks);
+
+          if (baris.length < 2) {
+            throw new Error("File tidak memiliki baris data.");
+          }
+
+          const header = baris[0].map(function (nama) {
+            return nama
+              .trim()
+              .toUpperCase()
+              .replace(/[ _]+/g, "_");
+          });
+
+          const kolomWajib = [...kolomSims, "SERVICE"];
+          
+          const kurang = kolomWajib.filter(function (nama) {
+            return !header.includes(nama);
+          });
+
+          if (kurang.length > 0) {
+            throw new Error(
+              "Kolom tidak ditemukan: " + kurang.join(", ")
+            );
+          }
+
+          const indeksKolom = kolomSims.map(function (nama) {
+            return header.indexOf(nama);
+          });
+
+          const dataBaru = [];
+          const barisBermasalah = [];
+
+          const indeksService = header.indexOf("SERVICE");
+
+          for (let i = 1; i < baris.length; i++) {
+            const service = String(baris[i][indeksService] ?? "")
+              .trim()
+              .replace(/\s+/g, " ")
+              .toLowerCase();
+            
+            // Hanya ambil Fixed Service.
+            if (service !== "fixed service") continue;
+            
+            const data = {};
+
+            kolomSims.forEach(function (nama, nomor) {
+              data[nama] =
+                (baris[i][indeksKolom[nomor]] ?? "").trim();
+            });
+
+            const lat = angkaKoordinat(data.SID_LAT);
+            const lon = angkaKoordinat(data.SID_LONG);
+
+            if (!koordinatValid(lat, lon)) {
+              barisBermasalah.push(i + 1);
+            }
+
+            dataBaru.push(data);
+          }
+
+          if (barisBermasalah.length > 0) {
+            throw new Error(
+              "Koordinat tidak valid pada baris data " +
+              barisBermasalah.slice(0, 10).join(", ") +
+              ". Perbaiki file sebelum digunakan."
+            );
+          }
+
+          if (dataBaru.length === 0) {
+            throw new Error(
+              "Tidak ditemukan data dengan SERVICE: Fixed Service."
+            );
+          }
+          databaseSims = dataBaru;
+          sedangMemuat = false;
+
+          // Tidak menampilkan kalimat jumlah catatan.
+          status.textContent = "";
+
+          if (posisiLapangan) {
+            tampilkanHasil(posisiLapangan);
+          } else {
+            bersihkanHasil(
+              "Klik Baca lokasi saya untuk menampilkan data tower."
+            );
+          }
+        } catch (error) {
+          if (unggahanIni !== nomorUnggahan) return;
+
+          sedangMemuat = false;
+          databaseSims = [];
+
+          status.textContent =
+            "Gagal membaca database: " + error.message;
+
+          bersihkanHasil("Pilih database SIMS yang valid.");
+        }
+      }
+    );
+
+    function jarakMeter(lat1, lon1, lat2, lon2) {
+      const rad = Math.PI / 180;
+
+      const a =
+        Math.sin((lat2 - lat1) * rad / 2) ** 2 +
+        Math.cos(lat1 * rad) *
+        Math.cos(lat2 * rad) *
+        Math.sin((lon2 - lon1) * rad / 2) ** 2;
+
+      const nilai = Math.min(1, Math.max(0, a));
+
+      return 6371000 * 2 *
+        Math.atan2(Math.sqrt(nilai), Math.sqrt(1 - nilai));
+    }
+
+    // Ambil tiga desimal tanpa pembulatan.
+    function tigaDesimal(nilai) {
+      const tanda = nilai < 0 ? "-" : "";
+      const angka = Math.abs(nilai);
+
+      // Hindari notasi eksponen untuk koordinat sangat kecil.
+      if (angka < 0.001) {
+        return tanda + "0.000";
+      }
+
+      const bagian = angka.toString().split(".");
+      const desimal = ((bagian[1] || "") + "000").slice(0, 3);
+
+      return tanda + bagian[0] + "." + desimal;
+    }
+
+    function kunciTower(latitude, longitude) {
+      return tigaDesimal(latitude) + "|" +
+        tigaDesimal(longitude);
+    }
+
+    function cariManual() {
+      const latitude = angkaKoordinat(
+        document.getElementById("latitudeManual").value
+      );
+
+      const longitude = angkaKoordinat(
+        document.getElementById("longitudeManual").value
+      );
+
+      tampilkanHasil({
+        latitude,
+        longitude
+      });
+    }
+
+    function tampilkanHasil(posisi) {
+      const status = document.getElementById("statusPencarian");
+      const wadah = document.getElementById("hasilPencarian");
+
+      wadah.replaceChildren();
+
+      dataTowerTerpilih = [];
+      resetInputFrekuensi();
+
+      if (sedangMemuat) {
+        status.textContent = "Database sedang dibaca.";
+        return;
+      }
+
+      if (!databaseSims.length) {
+        status.textContent = "Pilih database SIMS terlebih dahulu.";
+        return;
+      }
+
+      if (!koordinatValid(posisi.latitude, posisi.longitude)) {
+        status.textContent =
+          "Masukkan latitude dan longitude yang valid.";
+        return;
+      }
+
+      const dataValid = [];
+      let terdekat = null;
+
+      databaseSims.forEach(function (data) {
+        const lat = angkaKoordinat(data.SID_LAT);
+        const lon = angkaKoordinat(data.SID_LONG);
+
+        if (!koordinatValid(lat, lon)) return;
+
+        const jarak = jarakMeter(
+          posisi.latitude,
+          posisi.longitude,
+          lat,
+          lon
+        );
+
+        const catatan = {
+          data,
+          lat,
+          lon,
+          jarak
+        };
+
+        dataValid.push(catatan);
+
+        if (
+          jarak <= BATAS_JARAK &&
+          (terdekat === null || jarak < terdekat.jarak)
+        ) {
+          terdekat = catatan;
+        }
+      });
+
+      if (terdekat === null) {
+        status.textContent =
+          "Kandidat tower tidak ditemukan dalam radius 20 meter.";
+        return;
+      }
+
+      const kelompokTerpilih = kunciTower(
+        terdekat.lat,
+        terdekat.lon
+      );
+
+      const cocok = dataValid
+        .filter(function (catatan) {
+          return kunciTower(catatan.lat, catatan.lon) ===
+            kelompokTerpilih;
+        })
+        .sort(function (a, b) {
+          return a.jarak - b.jarak;
+        });
+
+      dataTowerTerpilih = cocok.map(function (catatan) {
+        return catatan.data;
+      });
+
+      status.textContent =
+        "Kandidat tower terdekat — jarak " +
+        terdekat.jarak.toFixed(2) + " meter.";
+
+      const operator = new Map();
+
+      cocok.forEach(function (catatan) {
+        const kunci = JSON.stringify([
+          catatan.data.CLNT_ID,
+          catatan.data.CLNT_NAME
+        ]);
+
+        if (!operator.has(kunci)) {
+          operator.set(kunci, []);
+        }
+
+        operator.get(kunci).push(catatan);
+      });
+
+      operator.forEach(function (daftar) {
+        const bagianOperator = document.createElement("section");
+        bagianOperator.className = "operator";
+
+        const judul = document.createElement("h3");
+        judul.textContent =
+          daftar[0].data.CLNT_NAME || "Operator tanpa nama";
+
+        bagianOperator.appendChild(judul);
+
+        daftar.forEach(function (catatan) {
+          const kartu = document.createElement("div");
+          kartu.className = "kartu";
+
+          const daftarParameter = document.createElement("dl");
+
+          kolomSims.forEach(function (kolom) {
+            const baris = document.createElement("div");
+            baris.className = "parameter";
+
+            const label = document.createElement("dt");
+            label.textContent = labelKolom[kolom];
+
+            const nilai = document.createElement("dd");
+            nilai.textContent = catatan.data[kolom] || "—";
+
+            baris.appendChild(label);
+            baris.appendChild(nilai);
+            daftarParameter.appendChild(baris);
+          });
+
+          kartu.appendChild(daftarParameter);
+          bagianOperator.appendChild(kartu);
+        });
+
+        wadah.appendChild(bagianOperator);
+      });
+    }
+  
+  function resetInputFrekuensi() {
+  document.getElementById("freqTx").value = "";
+  document.getElementById("freqRx").value = "";
+
+  const hasil = document.getElementById("hasilFrekuensi");
+  hasil.textContent = "";
+  hasil.style.color = "";
+}
+
+// Menyamakan penulisan 6540, 6540.0, dan 6540,000.
+// Tidak menerima satuan atau pemisah ribuan.
+function normalisasiFrekuensi(nilai) {
+  const teks = String(nilai ?? "").trim();
+
+  if (!/^\d+(?:[.,]\d+)?$/.test(teks)) return null;
+
+  const angka = Number(teks.replace(",", "."));
+
+  if (!Number.isFinite(angka) || angka <= 0) return null;
+
+  const bagian = teks.replace(",", ".").split(".");
+  const bulat = bagian[0].replace(/^0+(?=\d)/, "");
+  const desimal = (bagian[1] || "").replace(/0+$/, "");
+
+  return bulat + (desimal ? "." + desimal : "");
+}
+
+function periksaFrekuensi() {
+  const hasil = document.getElementById("hasilFrekuensi");
+
+  const teksTx = document.getElementById("freqTx").value.trim();
+  const teksRx = document.getElementById("freqRx").value.trim();
+
+  hasil.textContent = "";
+  hasil.style.color = "#173b50";
+
+  if (!teksTx || !teksRx) {
+    if (teksTx || teksRx) {
+      hasil.textContent = "Lengkapi FREQ Tx dan FREQ Rx.";
+    }
+    return;
+  }
+
+  if (!dataTowerTerpilih.length) {
+    hasil.textContent = "Tampilkan kandidat tower terlebih dahulu.";
+    return;
+  }
+
+  const tx = normalisasiFrekuensi(teksTx);
+  const rx = normalisasiFrekuensi(teksRx);
+
+  if (tx === null || rx === null) {
+    hasil.textContent =
+      "Masukkan angka positif tanpa satuan atau pemisah ribuan.";
+    return;
+  }
+
+  const pasangan = dataTowerTerpilih.map(function (data) {
+    return {
+      data,
+      tx: normalisasiFrekuensi(data.FREQ),
+      rx: normalisasiFrekuensi(data.FREQ_PAIR)
+    };
+  });
+
+  const lengkap = pasangan.filter(function (baris) {
+    return baris.tx !== null && baris.rx !== null;
+  });
+
+  function rincian(baris) {
+    return (
+      (baris.data.CLNT_NAME || "Operator tanpa nama") +
+      " | STN_NAME: " + (baris.data.STN_NAME || "—") +
+      "\nFREQ Tx SIMS: " + baris.data.FREQ +
+      " | FREQ Rx SIMS: " + baris.data.FREQ_PAIR +
+      "\nNomor izin: " + (baris.data.CURR_LIC_NUM || "—") +
+      "\nSTATUS_SIMF: " + (baris.data.STATUS_SIMF || "Tidak tersedia")
+    );
+  }
+
+  // Tx dan Rx wajib cocok pada satu baris yang sama.
+  const sesuai = lengkap.filter(function (baris) {
+    return baris.tx === tx && baris.rx === rx;
+  });
+
+  if (sesuai.length > 0) {
+    hasil.style.color = "#087443";
+    hasil.textContent =
+      "LEGAL — FREQ Tx dan FREQ Rx sesuai SIMS.\n\n" +
+      sesuai.map(rincian).join("\n\n");
+    return;
+  }
+
+  const terbalik = lengkap.filter(function (baris) {
+    return baris.tx === rx && baris.rx === tx;
+  });
+
+  // Data SIMS yang tidak lengkap dapat menyembunyikan
+  // pasangan yang sebenarnya sesuai.
+  if (lengkap.length !== pasangan.length) {
+    hasil.style.color = "#805600";
+    hasil.textContent =
+      "BELUM DAPAT DIVERIFIKASI — tidak ditemukan pasangan " +
+      "yang sesuai pada data lengkap. Sebagian FREQ atau " +
+      "FREQ PAIR kandidat tower kosong atau tidak valid.";
+
+    if (terbalik.length > 0) {
+      hasil.textContent +=
+        "\n\nDitemukan pasangan terbalik pada:\n" +
+        terbalik.map(rincian).join("\n\n");
+    }
+
+    return;
+  }
+
+  hasil.style.color = "#b42318";
+
+  if (terbalik.length > 0) {
+    hasil.textContent =
+      "ILEGAL — FREQ Tx dan FREQ Rx terbalik terhadap SIMS.\n\n" +
+      terbalik.map(rincian).join("\n\n");
+    return;
+  }
+
+  const txCocok = lengkap.filter(function (baris) {
+    return baris.tx === tx;
+  });
+
+  const rxCocok = lengkap.filter(function (baris) {
+    return baris.rx === rx;
+  });
+
+  if (txCocok.length > 0 && rxCocok.length > 0) {
+    hasil.textContent =
+      "ILEGAL — FREQ Tx dan FREQ Rx ada pada baris SIMS " +
+      "yang berbeda, bukan satu pasangan link.\n\n" +
+      "Baris dengan FREQ Tx cocok:\n" +
+      txCocok.map(rincian).join("\n\n") +
+      "\n\nBaris dengan FREQ Rx cocok:\n" +
+      rxCocok.map(rincian).join("\n\n");
+  } else if (txCocok.length > 0) {
+    hasil.textContent =
+      "ILEGAL — FREQ Tx sesuai, tetapi FREQ Rx tidak sesuai.\n\n" +
+      "Pasangan SIMS untuk FREQ Tx tersebut:\n" +
+      txCocok.map(rincian).join("\n\n");
+  } else if (rxCocok.length > 0) {
+    hasil.textContent =
+      "ILEGAL — FREQ Rx sesuai, tetapi FREQ Tx tidak sesuai.\n\n" +
+      "Pasangan SIMS untuk FREQ Rx tersebut:\n" +
+      rxCocok.map(rincian).join("\n\n");
+  } else {
+    hasil.textContent =
+      "ILEGAL — FREQ Tx dan FREQ Rx tidak ditemukan sebagai " +
+      "pasangan yang sesuai pada kandidat tower ini.";
+  }
+}
+
+// Periksa otomatis setiap kali isian berubah.
+document.getElementById("freqTx")
+  .addEventListener("input", periksaFrekuensi);
+
+document.getElementById("freqRx")
+  .addEventListener("input", periksaFrekuensi);
+    
+
+// AI dipanggil hanya dari backend Netlify, bukan langsung dari browser.
+function kategoriPemeriksaan() {
+  const pesan = document.getElementById("hasilFrekuensi").textContent || "";
+  const tx = normalisasiFrekuensi(document.getElementById("freqTx").value.trim());
+  const rx = normalisasiFrekuensi(document.getElementById("freqRx").value.trim());
+  if (!dataTowerTerpilih.length || tx === null || rx === null) return null;
+
+  // Hanya kategori, bukan data SIMS maupun angka frekuensi yang dikirim ke API.
+  if (pesan.startsWith("LEGAL —")) return "PASANGAN_SESUAI";
+  if (pesan.startsWith("BELUM DAPAT DIVERIFIKASI")) {
+    return pesan.includes("Ditemukan pasangan terbalik")
+      ? "DATA_TIDAK_LENGKAP_DAN_INDIKASI_TERBALIK"
+      : "DATA_TIDAK_LENGKAP";
+  }
+  if (pesan.includes("terbalik terhadap SIMS")) return "PASANGAN_TERBALIK";
+  if (pesan.includes("baris SIMS yang berbeda")) return "PASANGAN_BERBEDA_BARIS";
+  if (pesan.includes("FREQ Tx sesuai, tetapi FREQ Rx")) return "TX_COCOK_RX_BEDA";
+  if (pesan.includes("FREQ Rx sesuai, tetapi FREQ Tx")) return "RX_COCOK_TX_BEDA";
+  if (pesan.includes("tidak ditemukan sebagai pasangan")) return "PASANGAN_TIDAK_DITEMUKAN";
+  return null;
+}
+
+function perbaruiTombolAi() {
+  const tombol = document.getElementById("tombolAi");
+  if (!tombol.dataset.loading) tombol.disabled = !kategoriPemeriksaan();
+  document.getElementById("hasilAi").textContent = kategoriPemeriksaan()
+    ? 'Hasil validasi tersedia. Klik "Analisis AI" untuk rekomendasi.'
+    : 'Masukkan data pemeriksaan Tx/Rx terlebih dahulu.';
+}
+
+async function analisisAi() {
+  const kategori = kategoriPemeriksaan();
+  if (!kategori) return;
+  const tombol = document.getElementById("tombolAi");
+  const keluaran = document.getElementById("hasilAi");
+  tombol.dataset.loading = "true";
+  tombol.disabled = true;
+  keluaran.textContent = "Sedang meminta analisis AI...";
+  try {
+    const response = await fetch('/.netlify/functions/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kategori })
+    });
+    const hasil = await response.json();
+    if (!response.ok) throw new Error(hasil.error || 'Layanan AI gagal diakses.');
+    // Hindari menampilkan hasil dari pemeriksaan yang berubah selama permintaan.
+    keluaran.textContent = kategoriPemeriksaan() === kategori
+      ? hasil.analisis
+      : 'Input berubah selama analisis. Silakan jalankan analisis AI kembali.';
+  } catch (error) {
+    keluaran.textContent = 'AI belum tersedia: ' + error.message;
+  } finally {
+    delete tombol.dataset.loading;
+    tombol.disabled = !kategoriPemeriksaan();
+  }
+}
+
+// Pemantauan perubahan hasil validasi tetap dilakukan secara lokal.
+['freqTx', 'freqRx'].forEach(id => document.getElementById(id)
+  .addEventListener('input', perbaruiTombolAi));
+const pengamatAi = new MutationObserver(perbaruiTombolAi);
+pengamatAi.observe(document.getElementById('hasilFrekuensi'), { childList: true, characterData: true, subtree: true });
+
+  </script>
+</body>
+</html>
