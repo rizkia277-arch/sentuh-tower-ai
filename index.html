@@ -286,6 +286,7 @@
       document.getElementById('freqTx').value = '';
       document.getElementById('freqRx').value = '';
       document.getElementById('hasilFrekuensi').textContent = '';
+      delete document.getElementById('hasilFrekuensi').dataset.kategori;
       document.getElementById('freqTx').focus();
     "
   >
@@ -296,7 +297,7 @@
       <h3 id="judulAi">AI Inspection Assistant</h3>
       <p>Setelah hasil validasi Tx/Rx muncul, klik tombol ini untuk memperoleh penjelasan dan rekomendasi pemeriksaan lanjutan dari model AI.</p>
       <button type="button" id="tombolAi" onclick="analisisAi()" disabled>Analisis AI</button>
-      <p id="hasilAi" role="status" aria-live="polite">Masukkan data pemeriksaan Tx/Rx terlebih dahulu.</p>
+      <p id="hasilAi" role="status" aria-live="polite">Masukkan hasil pemeriksaan Tx dan/atau Rx terlebih dahulu.</p>
       <p class="catatan">Privasi: hanya kategori hasil validasi dikirim ke AI. Koordinat GPS, nama operator, nomor izin, database SIMS, dan frekuensi mentah tidak dikirim. AI tidak menetapkan status hukum atau menggantikan verifikasi petugas.</p>
     </section>
 </div>
@@ -806,6 +807,7 @@
 
   const hasil = document.getElementById("hasilFrekuensi");
   hasil.textContent = "";
+  delete hasil.dataset.kategori;
   hasil.style.color = "";
 }
 
@@ -834,14 +836,10 @@ function periksaFrekuensi() {
   const teksRx = document.getElementById("freqRx").value.trim();
 
   hasil.textContent = "";
+  delete hasil.dataset.kategori;
   hasil.style.color = "#173b50";
 
-  if (!teksTx || !teksRx) {
-    if (teksTx || teksRx) {
-      hasil.textContent = "Lengkapi FREQ Tx dan FREQ Rx.";
-    }
-    return;
-  }
+  if (!teksTx && !teksRx) return;
 
   if (!dataTowerTerpilih.length) {
     hasil.textContent = "Tampilkan kandidat tower terlebih dahulu.";
@@ -851,9 +849,8 @@ function periksaFrekuensi() {
   const tx = normalisasiFrekuensi(teksTx);
   const rx = normalisasiFrekuensi(teksRx);
 
-  if (tx === null || rx === null) {
-    hasil.textContent =
-      "Masukkan angka positif tanpa satuan atau pemisah ribuan.";
+  if ((teksTx && tx === null) || (teksRx && rx === null)) {
+    hasil.textContent = "Masukkan angka positif tanpa satuan atau pemisah ribuan.";
     return;
   }
 
@@ -878,6 +875,36 @@ function periksaFrekuensi() {
       "\nNomor izin: " + (baris.data.CURR_LIC_NUM || "—") +
       "\nSTATUS_SIMF: " + (baris.data.STATUS_SIMF || "Tidak tersedia")
     );
+  }
+
+  // Pemeriksaan parsial: salah satu parameter belum diukur / tidak tercantum.
+  // Jangan menyimpulkan status legalitas hanya dari satu frekuensi.
+  if (!teksTx || !teksRx) {
+    const hanyaTx = Boolean(teksTx);
+    const nilai = hanyaTx ? tx : rx;
+    const kolom = hanyaTx ? "tx" : "rx";
+    const nama = hanyaTx ? "Tx" : "Rx";
+    const cocokSebagian = pasangan.filter(baris => baris[kolom] === nilai);
+    const kolomLain = hanyaTx ? "rx" : "tx";
+    const kosongLawan = cocokSebagian.filter(baris => baris[kolomLain] === null);
+    hasil.style.color = "#805600";
+    if (cocokSebagian.length > 0) {
+      hasil.textContent =
+        "VERIFIKASI PARSIAL — FREQ " + nama + " cocok dengan SIMS. " +
+        (kosongLawan.length > 0
+          ? "Pada sebagian data pasangan, frekuensi lawannya kosong/tidak valid di SIMS. "
+          : "Frekuensi pasangannya belum dimasukkan dalam pemeriksaan. ") +
+        "Kesesuaian pasangan Tx/Rx dan status izin belum dapat disimpulkan.\n\n" +
+        cocokSebagian.map(rincian).join("\n\n");
+      hasil.dataset.kategori = hanyaTx ? "TX_SAJA_COCOK" : "RX_SAJA_COCOK";
+    } else {
+      hasil.textContent =
+        "BELUM DAPAT DIVERIFIKASI — FREQ " + nama +
+        " yang dimasukkan tidak ditemukan pada kolom " + nama +
+        " kandidat tower. Pastikan arah link dan kelengkapan data SIMS.";
+      hasil.dataset.kategori = hanyaTx ? "TX_SAJA_TIDAK_COCOK" : "RX_SAJA_TIDAK_COCOK";
+    }
+    return;
   }
 
   // Tx dan Rx wajib cocok pada satu baris yang sama.
@@ -970,7 +997,11 @@ function kategoriPemeriksaan() {
   const pesan = document.getElementById("hasilFrekuensi").textContent || "";
   const tx = normalisasiFrekuensi(document.getElementById("freqTx").value.trim());
   const rx = normalisasiFrekuensi(document.getElementById("freqRx").value.trim());
-  if (!dataTowerTerpilih.length || tx === null || rx === null) return null;
+  if (!dataTowerTerpilih.length || (tx === null && rx === null)) return null;
+  if (document.getElementById("hasilFrekuensi").dataset.kategori) {
+    return document.getElementById("hasilFrekuensi").dataset.kategori;
+  }
+  if (tx === null || rx === null) return null;
 
   // Hanya kategori, bukan data SIMS maupun angka frekuensi yang dikirim ke API.
   if (pesan.startsWith("LEGAL —")) return "PASANGAN_SESUAI";
@@ -992,7 +1023,7 @@ function perbaruiTombolAi() {
   if (!tombol.dataset.loading) tombol.disabled = !kategoriPemeriksaan();
   document.getElementById("hasilAi").textContent = kategoriPemeriksaan()
     ? 'Hasil validasi tersedia. Klik "Analisis AI" untuk rekomendasi.'
-    : 'Masukkan data pemeriksaan Tx/Rx terlebih dahulu.';
+    : 'Masukkan hasil pemeriksaan Tx dan/atau Rx terlebih dahulu.';
 }
 
 async function analisisAi() {

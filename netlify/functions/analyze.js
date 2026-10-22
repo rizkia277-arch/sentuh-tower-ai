@@ -3,7 +3,9 @@ const KATEGORI = new Set([
   'PASANGAN_SESUAI', 'DATA_TIDAK_LENGKAP',
   'DATA_TIDAK_LENGKAP_DAN_INDIKASI_TERBALIK', 'PASANGAN_TERBALIK',
   'PASANGAN_BERBEDA_BARIS', 'TX_COCOK_RX_BEDA',
-  'RX_COCOK_TX_BEDA', 'PASANGAN_TIDAK_DITEMUKAN'
+  'RX_COCOK_TX_BEDA', 'PASANGAN_TIDAK_DITEMUKAN',
+  'TX_SAJA_COCOK', 'TX_SAJA_TIDAK_COCOK',
+  'RX_SAJA_COCOK', 'RX_SAJA_TIDAK_COCOK'
 ]);
 
 exports.handler = async (event) => {
@@ -23,7 +25,7 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: e.message }) };
   }
-  const petunjuk = `Anda asisten teknis inspeksi stasiun radio Microwave Link di Indonesia. Jelaskan arti kategori pemeriksaan dalam bahasa Indonesia yang singkat (maks. 130 kata), lalu berikan 2-3 rekomendasi verifikasi lapangan yang aman dan realistis. Gunakan hanya kategori yang diberikan. Jangan mengarang detail frekuensi, identitas tower, ISR atau pengukuran. Jangan menyatakan LEGAL/ILEGAL sebagai kepastian hukum: keputusan final perlu pemeriksaan petugas dan data perizinan resmi. Pisahkan fakta hasil pencocokan dari hipotesis dan saran. Jangan menyatakan analisis sebagai bukti pemanfaatan AI untuk penentuan status hukum.`;
+  const petunjuk = `Anda asisten teknis inspeksi stasiun radio Microwave Link di Indonesia. Jelaskan arti kategori pemeriksaan dalam bahasa Indonesia yang singkat (maks. 130 kata), lalu berikan 2-3 rekomendasi verifikasi lapangan yang aman dan realistis. Gunakan hanya kategori yang diberikan. Jangan mengarang detail frekuensi, identitas tower, ISR atau pengukuran. Jika hanya Tx atau hanya Rx yang diperiksa, jelaskan secara tegas bahwa verifikasi bersifat parsial dan data pasangan mungkin kosong; jangan menyimpulkan izin. Jangan menyatakan LEGAL/ILEGAL sebagai kepastian hukum: keputusan final perlu pemeriksaan petugas dan data perizinan resmi. Pisahkan fakta hasil pencocokan dari hipotesis dan saran. Jangan menyatakan analisis sebagai bukti pemanfaatan AI untuk penentuan status hukum.`;
   try {
     const model = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
     // Hanya nama model tepercaya dari environment, tidak berasal dari pengunjung.

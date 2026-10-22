@@ -16,3 +16,15 @@ Uji alamat `https://<domainmu>/.netlify/functions/analyze` di browser: respons *
 CSV SIMS tetap di browser. Request menuju AI hanya objek `{"kategori":"..."}`, tanpa koordinat, frekuensi, nama operator, nomor ISR ataupun CSV. Kategori tetap dikirim ke Gemini/Google; gunakan kategori simulasi bila data dinas tidak diizinkan untuk API eksternal. AI memberi interpretasi dan saran saja, bukan penetapan legalitas.
 
 **Keamanan:** Tampilan saat ini tetap memiliki label LEGAL/ILEGAL berbasis aturan lama. Perlakukan label itu sebagai indikator pencocokan sementara, bukan keputusan hukum.
+
+
+## Update pemeriksaan parsial
+
+- Bila hanya frekuensi Tx yang tersedia di SIMS, petugas boleh memasukkan **Tx saja**.
+- Hasil yang cocok ditandai **VERIFIKASI PARSIAL**, bukan LEGAL/ILEGAL.
+- Asisten AI dapat menjelaskan kondisi pemeriksaan satu parameter tanpa menerima nilai frekuensi, lokasi, ISR, atau isi CSV.
+- Bila kemudian data Rx tersedia, isi kedua kolom untuk pemeriksaan pasangan.
+
+## Memperbarui GitHub
+
+Di repository yang sama, ganti `index.html` dan `netlify/functions/analyze.js` dengan versi dari ZIP ini, commit pada branch main. Netlify akan deploy otomatis.
