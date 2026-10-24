@@ -1,13 +1,12 @@
-# SENTUH TOWER — penyempurnaan validasi dan AI
+# SENTUH TOWER (versi terbaru + Gemini AI)
 
-Perubahan versi ini:
-1. Label LEGAL/ILEGAL pada hasil pencocokan frekuensi diganti menjadi status teknis (SESUAI SIMS, INDIKASI TIDAK SESUAI, BELUM SESUAI SIMS). Keputusan legalitas tetap memerlukan pemeriksaan petugas.
-2. Teks instruksi Gemini diperjelas agar rekomendasi tidak mengulang hasil pencocokan, dan memperhatikan kasus Tx/Rx parsial.
-3. GPS menampilkan estimasi akurasi `coords.accuracy` serta peringatan jika akurasi melebihi radius 20 meter; mode koordinat manual ditandai simulasi.
-4. Backend hanya mengirim kode kategori ke Gemini, bukan file CSV, koordinat, frekuensi ataupun ISR. Jangan gunakan data dinas pada layanan eksternal tanpa izin.
+Integrasi dibuat dari `index(1).html` yang dikirim pengguna pada 24 Oktober 2026. Seluruh fitur dari versi teman dipertahankan: pengenalan tower, data SIMS, pengisian pasangan frekuensi dari panduan, validasi EQ_MFR/BWIDTH, riwayat pemeriksaan dan ekspor Excel. Ditambahkan AI Inspection Assistant yang memanggil Netlify Function.
 
 ## Deploy
-Perbarui `index.html` di root repository GitHub dan `netlify/functions/analyze.js` di foldernya masing-masing. `netlify.toml` tetap disertakan. Netlify akan deploy dari branch `main`. Simpan `GEMINI_API_KEY` sebagai secret di pengaturan Netlify, jangan di repositori.
+Ganti `index.html`, `netlify.toml` dan `netlify/functions/analyze.js` pada repository GitHub yang terhubung Netlify. Variabel rahasia `GEMINI_API_KEY` tetap disimpan di Netlify. Jangan menaruh API key maupun CSV SIMS dalam repo.
 
-## Uji
-Uji skenario: Tx/Rx lengkap cocok, pasangan terbalik, hanya Tx dan hanya Rx, frekuensi tidak cocok; periksa juga mode GPS dan koordinat manual. Perhatikan nilai akurasi GPS merupakan perkiraan browser, bukan jaminan tower benar.
+**Privasi**: hanya string kategori validasi yang dikirim ke Gemini; tidak ada data SIMS atau koordinat.
+
+**Pengujian**: syntax check JavaScript tersedia, tetapi pengujian panggilan Gemini dan perilaku di website live perlu dilakukan di Netlify. AI memberi rekomendasi, bukan keputusan legalitas.
+
+**Catatan**: tombol AI dapat membaca satu atau dua frekuensi, sementara validasi dan Save pada versi teman masih mensyaratkan Tx/Rx lengkap. Fitur ini tidak mengubah aturan Save yang sudah ada.
