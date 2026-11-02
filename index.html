@@ -27,6 +27,10 @@
  .st-assistant-launch{right:12px!important;bottom:96px!important}
  .st-chat{right:8px!important;bottom:170px!important;width:calc(100vw - 16px)!important;height:min(520px,calc(100dvh - 192px))!important}
 }
+/* Empat menu tanpa gulir horizontal. */
+.st-chat-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;overflow:visible!important}
+.st-chat-actions button{white-space:normal!important;min-width:0!important;width:100%!important;padding:9px 6px!important;line-height:1.25!important;min-height:42px!important}
+@media(max-width:600px){.st-chat-actions button{font-size:11px!important}}
 </style>
 </head>
 
@@ -190,9 +194,9 @@
   <section id="stAssistantPanel" class="st-chat" aria-label="Asisten Virtual SENTUH TOWER" hidden>
     <div class="st-chat-head"><div><strong>🤖 Asisten SENTUH TOWER</strong><small>Dukungan pemeriksaan dan evaluasi data SIMS</small></div><button type="button" id="stAssistantClose" aria-label="Tutup asisten">×</button></div>
     <div id="stChatMessages" class="st-chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
-    <div class="st-chat-actions" aria-label="Pertanyaan cepat"><button type="button" data-question="Cara menggunakan aplikasi">Panduan Pemeriksaan</button><button type="button" data-question="Analisis hasil saat ini">Analisis Hasil Pemeriksaan</button><button type="button" data-question="Mengapa tidak sesuai?">Evaluasi Ketidaksesuaian</button><button type="button" data-question="Cara ekspor Excel">Ekspor Data</button></div>
+    <div class="st-chat-actions" aria-label="Menu Asisten Virtual"><button type="button" data-question="Panduan Pemeriksaan">Panduan Pemeriksaan</button><button type="button" data-question="Hasil Pemeriksaan">Hasil Pemeriksaan</button><button type="button" data-question="Tindakan">Tindakan</button><button type="button" data-question="Tanya">Tanya</button></div>
     <form id="stChatForm" class="st-chat-form"><input id="stChatInput" type="text" maxlength="500" placeholder="Silakan sampaikan pertanyaan pemeriksaan..." aria-label="Pertanyaan kepada asisten" required><button type="submit">Kirim</button></form>
-    <p class="st-chat-note">Asisten Virtual Gemini (versi 2). Jawaban AI bersifat pendukung; verifikasi dengan data SIMS dan pengukuran lapangan. Data hasil yang ditampilkan akan dikirim ke layanan Gemini saat pertanyaan dikirim.</p>
+    <p class="st-chat-note">Asisten Virtual SENTUH TOWER (versi 3). Jawaban AI bersifat pendukung; verifikasi dengan data SIMS dan pengukuran lapangan. Data hasil yang ditampilkan akan dikirim ke layanan Gemini saat pertanyaan dikirim.</p>
   </section>
 
   <script>
@@ -1171,28 +1175,40 @@ muatRiwayat();
     if(/tx|rx|frekuensi|freq|pair|bandwidth|bwidth|pabrikan|eq_mfr/.test(t))return 'FREQ Tx adalah frekuensi pancar dan FREQ Rx frekuensi terima; pasangan Tx/Rx perlu dibandingkan dengan data SIMS pada sisi link yang benar. BWIDTH adalah bandwidth dan EQ_MFR adalah merek/pabrikan perangkat. Gunakan satuan yang sama dengan SIMS.';
     if(/save|simpan|riwayat/.test(t))return 'Tekan Save setelah mengisi frekuensi dan memeriksa hasil. Setiap input tersimpan dalam daftar pemeriksaan untuk digabung ke file Excel. Tombol Clear hanya mengosongkan isian pemeriksaan saat ini.';
     if(/halo|hai|selamat|bantuan|tolong/.test(t))return 'Selamat datang di Asisten Virtual SENTUH TOWER. Saya dapat membantu memberikan panduan pemeriksaan, mengevaluasi hasil yang ditampilkan aplikasi, menjelaskan indikasi ketidaksesuaian frekuensi, dan membantu proses ekspor data.';
-    return 'Mohon maaf, informasi untuk pertanyaan tersebut belum tersedia. Silakan gunakan menu Panduan Pemeriksaan, Analisis Hasil Pemeriksaan, Evaluasi Ketidaksesuaian, atau Ekspor Data.';
+    return 'Silakan sampaikan pertanyaan teknis, misalnya tentang EQ_MFR, BWIDTH, ISR, atau kesesuaian perangkat.';
   }
   function open(){panel.hidden=false;launch.setAttribute('aria-expanded','true');input.focus()}
   function hide(){panel.hidden=true;launch.setAttribute('aria-expanded','false');launch.focus()}
   launch.addEventListener('click',()=>panel.hidden?open():hide());
   close.addEventListener('click',hide);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)hide()});
+  function panduan(){return 'Panduan Pemeriksaan\n1. Unggah database SIMS yang sesuai.\n2. Baca lokasi atau masukkan koordinat secara manual.\n3. Pilih dan verifikasi data tower yang ditampilkan.\n4. Masukkan frekuensi Tx, Rx, EQ_MFR, dan BWIDTH yang diperoleh di lapangan.\n5. Jalankan pemeriksaan dan cermati hasil kesesuaian dengan data SIMS.\n6. Simpan hasil pemeriksaan dan ekspor Excel.'}
+  function tindakan(){return 'Tindakan Pemeriksaan\nHasil ketidaksesuaian data SIMS merupakan indikasi awal, bukan penetapan pancaran ilegal. Petugas perlu memverifikasi identitas stasiun, ISR, frekuensi, arah link, perangkat, dan bukti lapangan.\n\nApabila penggunaan spektrum tanpa izin yang dipersyaratkan telah terbukti melalui proses resmi, dapat dilakukan penanganan sesuai kewenangan dan ketentuan berlaku, termasuk penghentian pemancaran dan pengenaan sanksi administratif. Besaran atau bentuk sanksi tidak dapat ditentukan otomatis dari hasil aplikasi. Dokumentasikan temuan dan koordinasikan dengan pejabat/unit berwenang.'}
+  function istilah(q){const t=q.toLowerCase();if(/eq_mfr|eq mfr|pabrikan|merek perangkat/.test(t))return 'EQ_MFR adalah equipment manufacturer, yaitu nama pabrikan/merek perangkat radio yang terpasang di lapangan. Bandingkan dengan identitas perangkat yang tercatat pada data stasiun radio.';if(/bwidth|bandwidth/.test(t))return 'BWIDTH merupakan bandwidth atau lebar pita frekuensi yang digunakan/ditetapkan untuk suatu emisi, sesuai definisi kolom data SIMS. Jangan menyamakan lebar pita frekuensi (misalnya MHz) dengan kapasitas data link (Mbps).';if(/isr.*terbalik|terbalik.*isr|tx.*rx.*terbalik/.test(t))return 'Indikasi pasangan Tx/Rx terbalik perlu diverifikasi terhadap arah link, sisi stasiun, pengukuran, dan dokumen ISR. Data yang terbalik belum otomatis membuktikan pelanggaran; periksa juga kemungkinan perbedaan sudut pandang antara dua ujung link.';if(/perangkat.*tidak sesuai|tidak sesuai.*perangkat/.test(t))return 'Perbedaan merek/jenis perangkat dengan data stasiun radio memerlukan pemeriksaan data teknis aktual, identitas perangkat, dan dokumen persetujuan/izin yang relevan. Catat temuan untuk verifikasi petugas berwenang; jangan menetapkan sanksi otomatis.';return null}
+  let busy=false;
   async function submit(q){
-    const pertanyaan=q.trim();if(!pertanyaan)return;
+    const pertanyaan=q.trim();if(!pertanyaan||busy)return;
+    if(pertanyaan.toLowerCase()==='tanya'){say('Silakan ketik pertanyaan teknis. Contoh: Apa itu EQ_MFR atau BWIDTH? Apa dampak jika pasangan Tx/Rx terbalik atau perangkat tidak sesuai?');input.focus();return}
     say(pertanyaan,true);
-    const pending=document.createElement('div');pending.className='st-chat-msg';pending.textContent='Asisten sedang menyusun jawaban...';messages.appendChild(pending);messages.scrollTop=messages.scrollHeight;
-    const context={tx:field('freqTx'),rx:field('freqRx'),hasil:txt('hasilFrekuensi').slice(0,4500),pencarian:txt('statusPencarian').slice(0,500)};
+    const mode=pertanyaan.toLowerCase();
+    if(mode==='panduan pemeriksaan'){say(panduan());return}
+    if(mode==='hasil pemeriksaan'){say(analisis());return}
+    if(mode==='tindakan'){say(tindakan());return}
+    const jawabanLokal=istilah(pertanyaan);
+    const pending=document.createElement('div');pending.className='st-chat-msg';pending.textContent='Sedang memproses pertanyaan...';messages.appendChild(pending);messages.scrollTop=messages.scrollHeight;
+    const context={tx:field('freqTx'),rx:field('freqRx'),hasil:txt('hasilFrekuensi').slice(0,4500),pencarian:txt('statusPencarian').slice(0,500),eq_mfr:field('eqMfrLapangan'),bwidth:field('bwidthLapangan')};
+    busy=true;const submitButton=form.querySelector('button[type="submit"]');submitButton.disabled=true;
     try{
-      const response=await fetch('/.netlify/functions/assistant-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:pertanyaan,context})});
+      const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),19000);
+      let response;
+      try{response=await fetch('/.netlify/functions/assistant-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:pertanyaan,context}),signal:controller.signal})}finally{clearTimeout(timer)}
       let data={};try{data=await response.json()}catch(_){}
       if(!response.ok)throw new Error(data.error||'Layanan AI belum tersedia.');
       if(!data.answer)throw new Error('Jawaban AI belum tersedia.');
       pending.textContent=data.answer;
     }catch(error){
-      pending.textContent='Koneksi Gemini belum berhasil: '+error.message+'\nSilakan periksa Netlify Functions dan environment variables. Fitur pemeriksaan utama tetap dapat digunakan.';
-    }
-    messages.scrollTop=messages.scrollHeight;
+      pending.textContent=(jawabanLokal||'Layanan AI sementara tidak dapat diakses. Pemeriksaan dan hasil yang ditampilkan di aplikasi tetap dapat digunakan. Silakan ulangi pertanyaan nanti.')+'\n\n(Catatan: jawaban ini adalah panduan lokal karena layanan Gemini belum merespons.)';
+    }finally{busy=false;submitButton.disabled=false;messages.scrollTop=messages.scrollHeight}
   }
   form.addEventListener('submit',e=>{e.preventDefault();submit(input.value);input.value='';input.focus()});
   panel.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>submit(b.dataset.question)));
