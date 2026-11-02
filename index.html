@@ -19,6 +19,14 @@
 .st-chat[hidden]{display:none}.st-chat-head{background:linear-gradient(110deg,#103d7a,#1976c2);padding:15px 18px;color:white;display:flex;align-items:center;justify-content:space-between;gap:10px}.st-chat-head strong{display:block}.st-chat-head small{display:block;color:#e4f4ff;font-size:11px}.st-chat-head button{min-height:32px;padding:3px 10px;background:#ffffff24;color:white;font-size:19px}
 .st-chat-messages{flex:1;overflow:auto;background:#f5f9fd;padding:15px;display:flex;flex-direction:column;gap:11px}.st-chat-msg{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;padding:11px 13px;border-radius:13px;max-width:93%;align-self:flex-start;background:white;border:1px solid #e1eaf3;color:#18354e}.st-chat-msg.user{align-self:flex-end;background:#1766b5;color:#fff;border-color:#1766b5}.st-chat-actions{display:flex;gap:7px;overflow:auto;padding:10px 12px;background:white;border-top:1px solid #e7eef5}.st-chat-actions button{white-space:nowrap;font-size:11px;padding:7px 10px;min-height:34px;background:#eaf3ff;color:#18518e}.st-chat-form{display:flex;gap:7px;padding:10px 12px;border-top:1px solid #e7eef5;background:white}.st-chat-form input{flex:1;min-width:0;padding:10px;border-radius:10px;border:1px solid #caddec;background:#fff;margin:0;font-size:13px}.st-chat-form button{min-height:40px;padding:9px 14px;font-size:13px}.st-chat-note{font-size:10px;padding:0 13px 9px;color:#637d94;background:white;margin:0}
 @media(max-width:600px){.st-assistant-launch{right:12px;bottom:12px;width:auto;padding:12px 16px}.st-chat{right:8px;bottom:75px;width:calc(100vw - 16px);height:min(570px,calc(100dvh - 96px))}.st-chat-form button{width:auto}.st-chat-head button{width:auto}.st-chat-actions button{width:auto}}
+
+/* Perbaikan posisi: hindari badge Powered by Netlify di kanan bawah. */
+.st-assistant-launch{bottom:104px!important;right:24px!important;z-index:2147483000!important}
+.st-chat{bottom:180px!important;right:24px!important;height:min(540px,calc(100dvh - 205px))!important;z-index:2147482999!important}
+@media(max-width:600px){
+ .st-assistant-launch{right:12px!important;bottom:96px!important}
+ .st-chat{right:8px!important;bottom:170px!important;width:calc(100vw - 16px)!important;height:min(520px,calc(100dvh - 192px))!important}
+}
 </style>
 </head>
 
@@ -184,7 +192,7 @@
     <div id="stChatMessages" class="st-chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
     <div class="st-chat-actions" aria-label="Pertanyaan cepat"><button type="button" data-question="Cara menggunakan aplikasi">Panduan Pemeriksaan</button><button type="button" data-question="Analisis hasil saat ini">Analisis Hasil Pemeriksaan</button><button type="button" data-question="Mengapa tidak sesuai?">Evaluasi Ketidaksesuaian</button><button type="button" data-question="Cara ekspor Excel">Ekspor Data</button></div>
     <form id="stChatForm" class="st-chat-form"><input id="stChatInput" type="text" maxlength="500" placeholder="Silakan sampaikan pertanyaan pemeriksaan..." aria-label="Pertanyaan kepada asisten" required><button type="submit">Kirim</button></form>
-    <p class="st-chat-note">Panduan otomatis lokal, bukan AI generatif. Verifikasi hasil dengan data SIMS dan pengukuran lapangan.</p>
+    <p class="st-chat-note">Asisten Virtual Gemini (versi 2). Jawaban AI bersifat pendukung; verifikasi dengan data SIMS dan pengukuran lapangan. Data hasil yang ditampilkan akan dikirim ke layanan Gemini saat pertanyaan dikirim.</p>
   </section>
 
   <script>
@@ -1170,7 +1178,22 @@ muatRiwayat();
   launch.addEventListener('click',()=>panel.hidden?open():hide());
   close.addEventListener('click',hide);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)hide()});
-  function submit(q){const pertanyaan=q.trim();if(!pertanyaan)return;say(pertanyaan,true);say(jawab(pertanyaan))}
+  async function submit(q){
+    const pertanyaan=q.trim();if(!pertanyaan)return;
+    say(pertanyaan,true);
+    const pending=document.createElement('div');pending.className='st-chat-msg';pending.textContent='Asisten sedang menyusun jawaban...';messages.appendChild(pending);messages.scrollTop=messages.scrollHeight;
+    const context={tx:field('freqTx'),rx:field('freqRx'),hasil:txt('hasilFrekuensi').slice(0,4500),pencarian:txt('statusPencarian').slice(0,500)};
+    try{
+      const response=await fetch('/.netlify/functions/assistant-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:pertanyaan,context})});
+      let data={};try{data=await response.json()}catch(_){}
+      if(!response.ok)throw new Error(data.error||'Layanan AI belum tersedia.');
+      if(!data.answer)throw new Error('Jawaban AI belum tersedia.');
+      pending.textContent=data.answer;
+    }catch(error){
+      pending.textContent='Koneksi Gemini belum berhasil: '+error.message+'\nSilakan periksa Netlify Functions dan environment variables. Fitur pemeriksaan utama tetap dapat digunakan.';
+    }
+    messages.scrollTop=messages.scrollHeight;
+  }
   form.addEventListener('submit',e=>{e.preventDefault();submit(input.value);input.value='';input.focus()});
   panel.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>submit(b.dataset.question)));
   say('Selamat datang di layanan Asisten Virtual SENTUH TOWER. Silakan pilih layanan yang tersedia atau sampaikan pertanyaan terkait pemeriksaan frekuensi dan verifikasi data SIMS.');
