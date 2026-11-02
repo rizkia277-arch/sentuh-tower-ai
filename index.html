@@ -9,12 +9,16 @@
 *{box-sizing:border-box}body{margin:0;padding:32px 18px;background:radial-gradient(ellipse at top left,#d8efff,transparent 55%),#edf3fb;color:#18354e;font-family:Inter,"Segoe UI",Arial,sans-serif;line-height:1.55}main{max-width:1000px;margin:auto;background:white;padding:32px;border:1px solid #dae6f3;border-radius:26px;box-shadow:0 16px 60px #183f7012}.brand{display:grid;grid-template-columns:110px 1fr 135px;align-items:center;gap:24px;padding:8px 0 26px}.brand img{width:100%;height:90px;object-fit:contain}.brand-copy{text-align:center}.brand h1{font-size:clamp(26px,4vw,42px);letter-spacing:-1.4px;color:#123c72;margin:0}.eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;color:#168baf}.brand p{margin:4px 0 0;color:#657e99;font-size:14px}h2{font-size:21px;color:#123c72;margin:0 0 16px}h3{color:#154a88}p{line-height:1.65}.hero{padding:26px;border-radius:18px;background:linear-gradient(115deg,#103d7a,#1668bf);color:white;margin-bottom:24px}.hero h2{color:white}.hero .info{display:inline-block;background:#ffffff1c;color:#fff;border:1px solid #ffffff3b;margin:0 0 16px;padding:9px 14px}.hero button{background:#fff;color:#15529b;box-shadow:0 4px 15px #082b5c30}.hero #hasilLokasi{color:#e1f4ff;margin-bottom:0}.panel{padding:25px;border:1px solid #dce7f4;border-radius:18px;background:#fff;margin:22px 0}.step{display:inline-grid;place-items:center;background:#e9f3ff;color:#1b65ad;border-radius:9px;width:30px;height:30px;font-size:13px;margin-right:10px;vertical-align:middle}button{border:0;border-radius:11px;background:linear-gradient(105deg,#1756aa,#197cd0);color:white;padding:13px 20px;font-size:15px;font-weight:650;cursor:pointer;min-height:46px}button:hover{filter:brightness(1.06)}button:disabled{opacity:.6;cursor:wait}button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #2bb6c6;outline-offset:3px}input{font:inherit;max-width:100%}input[type=text]{width:100%;padding:13px;margin-top:7px;border:1px solid #cbdbed;border-radius:10px;background:#f8fbff;color:#18354e}input[type=file]{width:100%;border:1px dashed #9dbfe0;border-radius:12px;background:#f4f9ff;padding:16px}input::file-selector-button{border:0;border-radius:7px;padding:9px 13px;background:#deedff;color:#174d86;margin-right:12px;font-weight:600}.manual{background:#f5f9fe;padding:20px;border:1px solid #dce7f4;border-radius:14px}summary{cursor:pointer;font-weight:700;color:#164e8c}details[open]>summary{margin-bottom:18px}.isian{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}label{font-weight:600;font-size:14px}.info{padding:18px;background:#eaf8fa;border:1px solid #bfe7eb;border-radius:13px;margin-bottom:20px}.operator{margin-top:24px}.kartu{border:1px solid #dce7f4;border-radius:13px;padding:18px;margin-bottom:16px;background:white}dl{margin:0}.parameter{display:grid;grid-template-columns:175px minmax(0,1fr);gap:16px;padding:11px 0;border-bottom:1px solid #edf2f8}.parameter:last-child{border-bottom:0}dt{font-weight:650;font-size:13px;color:#4e6c8e}dd{margin:0;overflow-wrap:anywhere}#statusPencarian{font-weight:650;padding:14px 17px;background:#eef5ff;border-radius:11px}#statusPencarian:empty,#statusDatabase:empty,#hasilFrekuensi:empty{display:none}#hasilFrekuensi:not(:empty){padding:18px;border:1px solid currentColor;border-radius:12px;background:#f9fbfe}.koordinat,#statusDatabase,#statusPencarian{overflow-wrap:anywhere}hr{display:none}.footer{text-align:center;font-size:12px;color:#71869f;margin-top:26px}.secondary{background:#eaf1fa;color:#345678}
 @media(max-width:600px){body{padding:10px}main{padding:18px;border-radius:18px}.brand{grid-template-columns:58px 1fr 75px;gap:10px;padding-bottom:20px}.brand img{height:58px}.brand h1{font-size:25px;letter-spacing:-.8px}.eyebrow{font-size:8px;letter-spacing:1px}.brand p{font-size:11px}.panel,.hero{padding:18px}.isian{grid-template-columns:1fr}.parameter{grid-template-columns:1fr;gap:4px}.manual{padding:16px}button{width:100%}.hero .info{font-size:13px}.kartu{padding:14px}}
 
-/* AI Inspection Assistant terpisah dari proses validasi dan penyimpanan pemeriksaan */
-.ai-panel{margin-top:22px;padding:22px;border:1px solid #bcd9ef;border-radius:16px;background:#f0f8ff}
-.ai-panel h3{margin:0 0 8px;color:#154a88}.ai-panel p{margin:8px 0 16px}
-.ai-result{margin-top:16px;line-height:1.6}.ai-result h4{margin:16px 0 5px;color:#18354e}
-.ai-result ol{margin-top:5px;padding-left:24px}.ai-result li{margin-bottom:6px}
-.ai-privacy{color:#5b738c;font-size:12px;margin-top:14px}
+/* Jarak tombol pemeriksaan konsisten pada laptop dan HP. */
+.aksi-pemeriksaan{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.aksi-pemeriksaan>button{width:auto;flex:0 0 auto;min-width:88px;margin:0}
+
+/* Asisten virtual SENTUH TOWER */
+.st-assistant-launch{position:fixed;right:22px;bottom:22px;z-index:1001;display:flex;align-items:center;gap:9px;border-radius:999px;box-shadow:0 10px 32px #0e427050;padding:13px 19px}
+.st-chat{position:fixed;right:22px;bottom:84px;z-index:1000;width:min(390px,calc(100vw - 24px));height:min(570px,calc(100dvh - 112px));display:flex;flex-direction:column;overflow:hidden;background:white;border:1px solid #d6e4f1;border-radius:18px;box-shadow:0 20px 55px #103c6940}
+.st-chat[hidden]{display:none}.st-chat-head{background:linear-gradient(110deg,#103d7a,#1976c2);padding:15px 18px;color:white;display:flex;align-items:center;justify-content:space-between;gap:10px}.st-chat-head strong{display:block}.st-chat-head small{display:block;color:#e4f4ff;font-size:11px}.st-chat-head button{min-height:32px;padding:3px 10px;background:#ffffff24;color:white;font-size:19px}
+.st-chat-messages{flex:1;overflow:auto;background:#f5f9fd;padding:15px;display:flex;flex-direction:column;gap:11px}.st-chat-msg{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;padding:11px 13px;border-radius:13px;max-width:93%;align-self:flex-start;background:white;border:1px solid #e1eaf3;color:#18354e}.st-chat-msg.user{align-self:flex-end;background:#1766b5;color:#fff;border-color:#1766b5}.st-chat-actions{display:flex;gap:7px;overflow:auto;padding:10px 12px;background:white;border-top:1px solid #e7eef5}.st-chat-actions button{white-space:nowrap;font-size:11px;padding:7px 10px;min-height:34px;background:#eaf3ff;color:#18518e}.st-chat-form{display:flex;gap:7px;padding:10px 12px;border-top:1px solid #e7eef5;background:white}.st-chat-form input{flex:1;min-width:0;padding:10px;border-radius:10px;border:1px solid #caddec;background:#fff;margin:0;font-size:13px}.st-chat-form button{min-height:40px;padding:9px 14px;font-size:13px}.st-chat-note{font-size:10px;padding:0 13px 9px;color:#637d94;background:white;margin:0}
+@media(max-width:600px){.st-assistant-launch{right:12px;bottom:12px;width:auto;padding:12px 16px}.st-chat{right:8px;bottom:75px;width:calc(100vw - 16px);height:min(570px,calc(100dvh - 96px))}.st-chat-form button{width:auto}.st-chat-head button{width:auto}.st-chat-actions button{width:auto}}
 </style>
 </head>
 
@@ -145,7 +149,7 @@
   <label for="keteranganLapangan">Keterangan petugas:
     <input id="keteranganLapangan" type="text" placeholder="Masukkan keterangan hasil pemeriksaan lapangan">
   </label>
-  <p></p>
+  <div class="aksi-pemeriksaan">
   <button type="button" onclick="simpanPemeriksaan()">Save</button>
   <button
     type="button"
@@ -161,14 +165,7 @@
   >
     Clear
   </button>
-
-  <section class="ai-panel" aria-labelledby="aiHeading">
-    <h3 id="aiHeading">AI Inspection Assistant</h3>
-    <p>Analisis teknis dan rekomendasi tindak lanjut berdasarkan kategori hasil pemeriksaan frekuensi.</p>
-    <button id="tombolAnalisisAI" type="button" onclick="jalankanAnalisisAI()">Analisis AI</button>
-    <div id="hasilAnalisisAI" class="ai-result" role="status" aria-live="polite"></div>
-    <div class="ai-privacy">Privasi: hanya kategori hasil validasi dikirim kepada Gemini. Data SIMS, koordinat, nomor izin, nama penyelenggara, dan frekuensi aktual tidak dikirim. Gunakan data simulasi untuk pengujian AI hingga ada persetujuan penggunaan data kedinasan.</div>
-  </section>
+  </div>
 </section>
     <section class="panel"><h2><span class="step">04</span>File Pemeriksaan</h2>
       <p id="pesanRiwayat" role="status"></p><p id="jumlahRiwayat" role="status"></p>
@@ -179,6 +176,16 @@
     </section>
     <p class="footer">Sentuh Tower · Pengawasan Spektrum Frekuensi Radio</p>
   </main>
+
+
+  <button type="button" id="stAssistantLaunch" class="st-assistant-launch" aria-expanded="false" aria-controls="stAssistantPanel">💬 Asisten Virtual</button>
+  <section id="stAssistantPanel" class="st-chat" aria-label="Asisten Virtual SENTUH TOWER" hidden>
+    <div class="st-chat-head"><div><strong>🤖 Asisten SENTUH TOWER</strong><small>Dukungan pemeriksaan dan evaluasi data SIMS</small></div><button type="button" id="stAssistantClose" aria-label="Tutup asisten">×</button></div>
+    <div id="stChatMessages" class="st-chat-messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+    <div class="st-chat-actions" aria-label="Pertanyaan cepat"><button type="button" data-question="Cara menggunakan aplikasi">Panduan Pemeriksaan</button><button type="button" data-question="Analisis hasil saat ini">Analisis Hasil Pemeriksaan</button><button type="button" data-question="Mengapa tidak sesuai?">Evaluasi Ketidaksesuaian</button><button type="button" data-question="Cara ekspor Excel">Ekspor Data</button></div>
+    <form id="stChatForm" class="st-chat-form"><input id="stChatInput" type="text" maxlength="500" placeholder="Silakan sampaikan pertanyaan pemeriksaan..." aria-label="Pertanyaan kepada asisten" required><button type="submit">Kirim</button></form>
+    <p class="st-chat-note">Panduan otomatis lokal, bukan AI generatif. Verifikasi hasil dengan data SIMS dan pengukuran lapangan.</p>
+  </section>
 
   <script>
     const BATAS_JARAK = 20;
@@ -845,7 +852,7 @@ function periksaFrekuensi() {
   if (sesuai.length > 0) {
     hasil.style.color = "#087443";
     hasil.textContent =
-      "SESUAI SIMS — FREQ Tx dan FREQ Rx sesuai SIMS.\n\n" +
+      "LEGAL — FREQ Tx dan FREQ Rx sesuai SIMS.\n\n" +
       sesuai.map(rincian).join("\n\n");
     const merekLapangan = normalisasiPabrikan(document.getElementById("eqMfrLapangan").value);
     const merekSesuai = merekLapangan && sesuai.some(baris =>
@@ -919,7 +926,7 @@ function periksaFrekuensi() {
 
   if (terbalik.length > 0) {
     hasil.textContent =
-      "INDIKASI TIDAK SESUAI — FREQ Tx dan FREQ Rx TERBALIK terhadap SIMS.\n\n" +
+      "ILEGAL — FREQ Tx dan FREQ Rx TERBALIK terhadap SIMS.\n\n" +
       terbalik.map(rincian).join("\n\n");
     return;
   }
@@ -934,7 +941,7 @@ function periksaFrekuensi() {
 
   if (txCocok.length > 0 && rxCocok.length > 0) {
     hasil.textContent =
-      "INDIKASI TIDAK SESUAI — FREQ Tx dan FREQ Rx ada pada baris SIMS " +
+      "ILEGAL — FREQ Tx dan FREQ Rx ada pada baris SIMS " +
       "yang berbeda, bukan satu pasangan link.\n\n" +
       "Baris dengan FREQ Tx cocok:\n" +
       txCocok.map(rincian).join("\n\n") +
@@ -942,17 +949,17 @@ function periksaFrekuensi() {
       rxCocok.map(rincian).join("\n\n");
   } else if (txCocok.length > 0) {
     hasil.textContent =
-      "INDIKASI TIDAK SESUAI — FREQ Tx sesuai, tetapi FREQ Rx tidak sesuai.\n\n" +
+      "ILEGAL — FREQ Tx sesuai, tetapi FREQ Rx tidak sesuai.\n\n" +
       "Pasangan SIMS untuk FREQ Tx tersebut:\n" +
       txCocok.map(rincian).join("\n\n");
   } else if (rxCocok.length > 0) {
     hasil.textContent =
-      "INDIKASI TIDAK SESUAI — FREQ Rx sesuai, tetapi FREQ Tx tidak sesuai.\n\n" +
+      "ILEGAL — FREQ Rx sesuai, tetapi FREQ Tx tidak sesuai.\n\n" +
       "Pasangan SIMS untuk FREQ Rx tersebut:\n" +
       rxCocok.map(rincian).join("\n\n");
   } else {
     hasil.textContent =
-      "INDIKASI TIDAK SESUAI — FREQ Tx dan FREQ Rx tidak ditemukan sebagai " +
+      "ILEGAL — FREQ Tx dan FREQ Rx tidak ditemukan sebagai " +
       "pasangan yang sesuai pada kandidat tower ini.";
   }
 }
@@ -1107,76 +1114,68 @@ async function unduhExcel(){
 
 muatRiwayat();
 
-  
-// Pengintegrasian AI: seluruh database tetap di browser.
-let kategoriAnalisisTerakhir = null;
-function tentukanKategoriAI(){
-  if(!dataTowerTerpilih.length)return null;
-  const txTeks=document.getElementById('freqTx').value.trim();
-  const rxTeks=document.getElementById('freqRx').value.trim();
-  if(!txTeks&&!rxTeks)return null;
-  const tx=txTeks?normalisasiFrekuensi(txTeks):null;
-  const rx=rxTeks?normalisasiFrekuensi(rxTeks):null;
-  if((txTeks&&!tx)||(rxTeks&&!rx))return null;
-  const pasangan=dataTowerTerpilih.map(data=>({tx:normalisasiFrekuensi(data.FREQ),rx:normalisasiFrekuensi(data.FREQ_PAIR)}));
-  if(tx&&!rx)return pasangan.some(p=>p.tx===tx)?'TX_SAJA_COCOK':'TX_SAJA_TIDAK_COCOK';
-  if(rx&&!tx)return pasangan.some(p=>p.rx===rx)?'RX_SAJA_COCOK':'RX_SAJA_TIDAK_COCOK';
-  const lengkap=pasangan.filter(p=>p.tx&&p.rx);
-  if(lengkap.some(p=>p.tx===tx&&p.rx===rx))return 'PASANGAN_SESUAI';
-  const terbalik=lengkap.some(p=>p.tx===rx&&p.rx===tx);
-  if(lengkap.length!==pasangan.length)return terbalik?'DATA_TIDAK_LENGKAP_DAN_INDIKASI_TERBALIK':'DATA_TIDAK_LENGKAP';
-  if(terbalik)return 'PASANGAN_TERBALIK';
-  const txCocok=lengkap.some(p=>p.tx===tx),rxCocok=lengkap.some(p=>p.rx===rx);
-  if(txCocok&&rxCocok)return 'PASANGAN_BERBEDA_BARIS';
-  if(txCocok)return 'TX_COCOK_RX_BEDA';
-  if(rxCocok)return 'RX_COCOK_TX_BEDA';
-  return 'PASANGAN_TIDAK_DITEMUKAN';
-}
-function bersihkanAnalisisAI(){
-  kategoriAnalisisTerakhir=null;
-  const el=document.getElementById('hasilAnalisisAI');
-  if(el)el.replaceChildren();
-}
-function beriTeksInduk(induk,tag,teks){const el=document.createElement(tag);el.textContent=teks;induk.appendChild(el);return el;}
-async function jalankanAnalisisAI(){
-  const wadah=document.getElementById('hasilAnalisisAI');
-  const tombol=document.getElementById('tombolAnalisisAI');
-  const kategori=tentukanKategoriAI();
-  wadah.replaceChildren();
-  if(!kategori){beriTeksInduk(wadah,'p','Pilih tower dan masukkan setidaknya satu frekuensi Tx atau Rx yang valid.');return;}
-  kategoriAnalisisTerakhir=kategori;
-  tombol.disabled=true;beriTeksInduk(wadah,'p','Sedang menyusun analisis...');
-  try{
-    const respons=await fetch('/.netlify/functions/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kategori})});
-    const data=await respons.json();
-    if(!respons.ok||!data.hasil)throw new Error(data.error||'Layanan AI tidak tersedia.');
-    if(kategori!==tentukanKategoriAI())return;
-    const hasil=data.hasil;
-    wadah.replaceChildren();
-    beriTeksInduk(wadah,'h4',hasil.kesimpulan||'Hasil Analisis');
-    beriTeksInduk(wadah,'h4','Hasil Analisis');
-    beriTeksInduk(wadah,'p',hasil.penjelasan||'Tidak ada penjelasan yang tersedia.');
-    beriTeksInduk(wadah,'h4','Rekomendasi Tindak Lanjut');
-    const daftar=document.createElement('ol');
-    for(const teks of Array.isArray(hasil.tindak_lanjut)?hasil.tindak_lanjut:[]){beriTeksInduk(daftar,'li',teks);}
-    wadah.appendChild(daftar);
-  }catch(err){
-    wadah.replaceChildren();
-    beriTeksInduk(wadah,'p','Analisis AI belum dapat ditampilkan. Periksa koneksi, kuota Gemini, dan log fungsi analyze di Netlify.');
-  }finally{tombol.disabled=false;}
-}
-['freqTx','freqRx','fileSims','latitudeManual','longitudeManual'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)el.addEventListener(id==='fileSims'?'change':'input',bersihkanAnalisisAI);
-});
-// Menghapus hasil AI lama ketika lokasi atau kandidat stasiun diperbarui.
-const asliBersihkanHasil=bersihkanHasil;
-bersihkanHasil=function(...args){bersihkanAnalisisAI();return asliBersihkanHasil(...args);};
-const asliTampilkanHasil=tampilkanHasil;
-tampilkanHasil=function(...args){bersihkanAnalisisAI();return asliTampilkanHasil(...args);};
-const asliResetInputFrekuensi=resetInputFrekuensi;
-resetInputFrekuensi=function(...args){bersihkanAnalisisAI();return asliResetInputFrekuensi(...args);};
+// Asisten lokal: tidak memerlukan API key dan tidak mengirim data pemeriksaan ke server.
+(function initSentuhAssistant(){
+  const launch=document.getElementById('stAssistantLaunch');
+  const panel=document.getElementById('stAssistantPanel');
+  const close=document.getElementById('stAssistantClose');
+  const messages=document.getElementById('stChatMessages');
+  const form=document.getElementById('stChatForm');
+  const input=document.getElementById('stChatInput');
+  function say(teks, dariUser=false){
+    const bubble=document.createElement('div');bubble.className='st-chat-msg'+(dariUser?' user':'');bubble.textContent=teks;messages.appendChild(bubble);messages.scrollTop=messages.scrollHeight;
+  }
+  function field(id){return (document.getElementById(id)?.value||'').trim()}
+  function txt(id){return (document.getElementById(id)?.textContent||'').trim()}
+  function analisis(){
+    const tx=field('freqTx'),rx=field('freqRx'),hasil=txt('hasilFrekuensi');
+    const pencarian=txt('statusPencarian');
+    if(!tx&&!rx)return 'Data pemeriksaan belum tersedia. Silakan unggah database SIMS, tentukan lokasi site, dan masukkan frekuensi Tx serta Rx untuk memulai pemeriksaan.';
+    if(!tx||!rx)return 'Data pemeriksaan belum lengkap. Silakan lengkapi frekuensi Tx dan Rx sebelum melakukan evaluasi pasangan frekuensi.';
+    if(!hasil)return 'Hasil pemeriksaan belum tersedia. Pastikan database SIMS telah dimuat, kandidat tower telah ditampilkan, dan proses pencocokan sudah dilaksanakan. Informasi pencarian: '+(pencarian||'belum tersedia')+'.';
+    const normalized=hasil.toLowerCase();
+    let status='MEMERLUKAN VERIFIKASI LANJUTAN';
+    if(/tidak sesuai|ketidaksesuaian|tidak cocok|berbeda/.test(normalized))status='TERINDIKASI TIDAK SESUAI';
+    else if(/belum dapat|tidak ditemukan|tidak tersedia|tidak ada|kosong|gagal/.test(normalized))status='BELUM DAPAT DIVERIFIKASI';
+    else if(/sesuai|cocok/.test(normalized))status='TERINDIKASI SESUAI';
+    const saran=status==='TERINDIKASI SESUAI'
+      ?'Pastikan identitas site, arah link, dan kesesuaian parameter teknis lainnya sebelum menetapkan hasil akhir.'
+      :status==='TERINDIKASI TIDAK SESUAI'
+      ?'Periksa kembali frekuensi Tx/Rx, kemungkinan pertukaran arah link, identitas site, satuan pengukuran, dan kemutakhiran database SIMS. Ketidaksesuaian awal bukan penetapan pelanggaran.'
+      :'Verifikasi kembali kandidat tower, kelengkapan data referensi, parameter lapangan, dan hasil pencarian sebelum membuat kesimpulan.';
+    return 'EVALUASI HASIL PEMERIKSAAN\n\n'+
+      'Frekuensi Tx lapangan: '+tx+'\nFrekuensi Rx lapangan: '+rx+'\n'+
+      'Status indikatif: '+status+'\n\n'+
+      'Dasar evaluasi (hasil yang ditampilkan aplikasi):\n'+hasil.slice(0,2500)+(hasil.length>2500?'\n[Hasil ditampilkan sebagian]':'')+'\n\n'+
+      'Rekomendasi tindak lanjut:\n'+saran+'\n\n'+
+      'Catatan: Evaluasi ini merupakan rangkuman otomatis, bukan keputusan pemeriksaan resmi maupun analisis AI generatif.';
+  }
+  function jawab(q){
+    const t=q.toLowerCase();
+    if(/analisis|hasil saat ini|hasil pemeriksaan|status saat ini|cek hasil/.test(t))return analisis();
+    if(/cara|langkah|panduan|pakai|mulai|penggunaan/.test(t)&&!/excel|ekspor|simpan|upload|unggah|lokasi/.test(t))return 'Panduan pelaksanaan pemeriksaan:\n1. Pilih/unggah database SIMS yang sesuai.\n2. Baca lokasi GPS atau cari dengan koordinat manual.\n3. Periksa kandidat tower di bagian Data Tower.\n4. Masukkan FREQ Tx, FREQ Rx, dan parameter lapangan yang diperlukan.\n5. Baca hasil kecocokan SIMS, lalu tekan Save.\n6. Pilih Selesai · Simpan Excel (.xlsx) untuk ekspor.';
+    if(/excel|ekspor|unduh|download|file pemeriksaan/.test(t))return 'Setelah setiap pemeriksaan, pilih tombol Save. Pada bagian 04 File Pemeriksaan, isi nama file jika perlu lalu pilih “Selesai · Simpan Excel (.xlsx)”. Simpan file sebelum memilih “Mulai Site Baru”.';
+    if(/lokasi|gps|koordinat|jarak|20 meter/.test(t))return 'Gunakan tombol baca lokasi dan izinkan akses GPS pada browser, atau masukkan koordinat secara manual. Sistem menggunakan batas jarak kandidat tower 20 meter. Akurasi GPS dapat berubah sesuai kondisi lapangan; pastikan koordinat sudah benar.';
+    if(/unggah|upload|csv|database|sims/.test(t))return 'Gunakan file database SIMS sesuai format kolom yang diminta aplikasi. Setelah file terbaca, sistem mencari data tower berdasarkan lokasi. Data SIMS merupakan referensi; pastikan file yang digunakan terbaru dan benar.';
+    if(/tidak sesuai|mismatch|beda|selisih|terbalik/.test(t))return '“Tidak sesuai” menandakan terdapat perbedaan antara parameter lapangan dan referensi SIMS yang diperiksa. Pastikan posisi site, Tx/Rx, pasangan frekuensi, satuan, dan data SIMS. Jika arah Tx/Rx tertukar, periksa kemungkinan sisi link yang berbeda; jangan langsung menyimpulkan pelanggaran.';
+    if(/belum dapat|tidak ditemukan|kosong|tidak ada data/.test(t))return 'Status belum dapat diverifikasi bisa terjadi jika kandidat tower tidak ditemukan, pasangan frekuensi belum lengkap, atau data referensi tidak mencukupi. Cek ulang file SIMS, koordinat dan kelengkapan parameter lapangan.';
+    if(/sesuai|cocok/.test(t))return 'Status “sesuai” berarti parameter yang diperiksa cocok dengan referensi SIMS pada kondisi pencarian tersebut. Tetap verifikasi site, sisi link, perangkat, dan data sumber bila diperlukan.';
+    if(/tx|rx|frekuensi|freq|pair|bandwidth|bwidth|pabrikan|eq_mfr/.test(t))return 'FREQ Tx adalah frekuensi pancar dan FREQ Rx frekuensi terima; pasangan Tx/Rx perlu dibandingkan dengan data SIMS pada sisi link yang benar. BWIDTH adalah bandwidth dan EQ_MFR adalah merek/pabrikan perangkat. Gunakan satuan yang sama dengan SIMS.';
+    if(/save|simpan|riwayat/.test(t))return 'Tekan Save setelah mengisi frekuensi dan memeriksa hasil. Setiap input tersimpan dalam daftar pemeriksaan untuk digabung ke file Excel. Tombol Clear hanya mengosongkan isian pemeriksaan saat ini.';
+    if(/halo|hai|selamat|bantuan|tolong/.test(t))return 'Selamat datang di Asisten Virtual SENTUH TOWER. Saya dapat membantu memberikan panduan pemeriksaan, mengevaluasi hasil yang ditampilkan aplikasi, menjelaskan indikasi ketidaksesuaian frekuensi, dan membantu proses ekspor data.';
+    return 'Mohon maaf, informasi untuk pertanyaan tersebut belum tersedia. Silakan gunakan menu Panduan Pemeriksaan, Analisis Hasil Pemeriksaan, Evaluasi Ketidaksesuaian, atau Ekspor Data.';
+  }
+  function open(){panel.hidden=false;launch.setAttribute('aria-expanded','true');input.focus()}
+  function hide(){panel.hidden=true;launch.setAttribute('aria-expanded','false');launch.focus()}
+  launch.addEventListener('click',()=>panel.hidden?open():hide());
+  close.addEventListener('click',hide);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!panel.hidden)hide()});
+  function submit(q){const pertanyaan=q.trim();if(!pertanyaan)return;say(pertanyaan,true);say(jawab(pertanyaan))}
+  form.addEventListener('submit',e=>{e.preventDefault();submit(input.value);input.value='';input.focus()});
+  panel.querySelectorAll('[data-question]').forEach(b=>b.addEventListener('click',()=>submit(b.dataset.question)));
+  say('Selamat datang di layanan Asisten Virtual SENTUH TOWER. Silakan pilih layanan yang tersedia atau sampaikan pertanyaan terkait pemeriksaan frekuensi dan verifikasi data SIMS.');
+})();
 
-</script>
+  </script>
 </body>
 </html>
